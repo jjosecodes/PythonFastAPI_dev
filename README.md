@@ -9,3 +9,6 @@ venv/scripts/activate
 
 #### turn on server 
 uvicorn main:app --reload
+
+
+
