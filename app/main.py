@@ -3,7 +3,7 @@ from fastapi import FastAPI,Response , status, HTTPException
 from fastapi import Body
 from pydantic import BaseModel
 from random import randrange
-
+import psycopg
 app = FastAPI()
 
 # pydantic data validation model
@@ -11,9 +11,13 @@ class Post(BaseModel):
     title:str   
     content:str
     published: bool = True
-    rating: Optional[int] = None
+# id 
+# created at 
+#    rating: Optional[int] = None
 
-
+try:
+    conn = psycopg.connect( host = "localhost", database = 'fastapi', user = 'postgres',
+            'password' = 'passwordiguessforGIT')
 
 
 my_posts = [{"title": "title of post 1", "content": "content of post 1", "id": 1},
