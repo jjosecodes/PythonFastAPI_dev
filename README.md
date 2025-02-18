@@ -2,7 +2,7 @@
 
 
 
-https://medium.com/@kevinkoech265/a-guide-to-connecting-postgresql-and-pythons-fast-api-from-installation-to-integration-825f875f9f7d
+
 
 #### activate venv 
 venv/scripts/activate
@@ -11,4 +11,5 @@ venv/scripts/activate
 uvicorn main:app --reload
 
 
+3:39:24
 
