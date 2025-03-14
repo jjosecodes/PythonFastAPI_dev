@@ -3,7 +3,10 @@ from fastapi import FastAPI,Response , status, HTTPException
 from fastapi import Body
 from pydantic import BaseModel
 from random import randrange
-import psycopg
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import time
+
 app = FastAPI()
 
 # pydantic data validation model
@@ -14,10 +17,18 @@ class Post(BaseModel):
 # id 
 # created at 
 #    rating: Optional[int] = None
+while True:
 
-try:
-    conn = psycopg.connect( host = "localhost", database = 'fastapi', user = 'postgres',
-            'password' = 'passwordiguessforGIT')
+    try:
+        conn = psycopg2.connect( host = "localhost", database = 'fastapi', 
+        user = 'postgres', password = 'jj', cursor_factory = RealDictCursor)
+        cursor = conn.cursor()
+        print("Connected to the database")
+        break
+    except Exception as error:
+        print(" connecting to database failed ")
+        print ("Error: ", error)
+        time.sleep(5)
 
 
 my_posts = [{"title": "title of post 1", "content": "content of post 1", "id": 1},
@@ -41,14 +52,20 @@ async def root():
 
 @app.get("/posts")
 def get_posts():
-    return{"data": my_posts}
+    cursor.execute("""SELECT * FROM posts """)
+    posts = cursor.fetchall()
+#    print(posts)
+    return{"data": posts}
 
 @app.post("/posts", status_code = status.HTTP_201_CREATED)
 def create_posts(post: Post):
-    post_dict = post.dict()
-    post_dict['id'] = randrange(0, 100000000)
-    my_posts.append(post_dict)
-    return {"data": post_dict }
+#    post_dict = post.dict()
+#    post_dict['id'] = randrange(0, 100000000)
+#    my_posts.append(post_dict)
+    cursor.execute(""" INSERT INTO posts (title, content,published) VALUES (%s, %s, %s)""",(post.title, post.content, post.published))
+    new_post = cursor.fetchone()
+
+    return {"data": new_post }
 
 @app.get("/posts/latest")
 def get_latest_post():
@@ -92,3 +109,5 @@ def update_post(id: int, post: Post):
     post_dict['id'] = id
     my_posts[index] = post_dict
     return{'message' : "updated post "}
+
+    # around 4 
